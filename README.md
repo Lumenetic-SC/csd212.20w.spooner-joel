@@ -7,4 +7,5 @@ This repository contains lab work for the Sault College course CSD212
 - Lab 5: The DOM 
 - Lab 6: Forms and Validation 
 - Lab 7: Objects 
-- Lab 8: String and Array Manipulation **Author**: Joel Spooner
+- Lab 8: String and Array Manipulation 
+**Author**: Joel Spooner
