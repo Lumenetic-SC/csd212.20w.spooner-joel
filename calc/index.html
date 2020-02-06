@@ -135,31 +135,23 @@
         var hasDecimal = false;
         function setDisplay(numValue) {
                  
-                if (document.getElementById("display").innerText == '0') {
-                    if (numValue == '.'){    //we want to append a decimal onto 0
-                        document.getElementById("display").innerText = '0.';
+                if (numValue == '.'){
+                    if (document.getElementById("display").innerText == '0') {
+                        document.getElementById("display").innerText += numValue;
                         hasDecimal = true;
-                    } else {                //but replace 0 with any other input
+                    } else if (hasDecimal == false) {
+                        document.getElementById("display").innerText += '.';
+                        hasDecimal = true;
+                    }
+                } else {
+                    if (numValue == 0 && document.getElementById("display").innerText != '0') {
+                        document.getElementById("display").innerText += numValue;
+                    } else if (document.getElementById("display").innerText == '0') {
                         document.getElementById("display").innerText = numValue;
+                    } else {
+                        document.getElementById("display").innerText += numValue;
                     }
                 }
-                else if (document.getElementById("display").innerText =='0.'){
-                    if (numValue != '.'){  //we cannot accept a decimal here
-                        document.getElementById("display").innerText = document.getElementById("display").innerText + numValue;
-
-                    }
-                }
-                else {
-                    if (numValue == '.') {     //if input is a decimal and we do not yet have a decimal, append it to the display, otherwise do nothing
-                        if (hasDecimal == false){
-                            document.getElementById("display").innerText = document.getElementById("display").innerText + numValue;
-                            hasDecimal = true;
-                        }
-                    } else {   //append any other input value to display
-                        document.getElementById("display").innerText = document.getElementById("display").innerText + numValue;
-                    }
-                }
-
         }
         function clear() {
             document.getElementById("display").innerText = 0;
