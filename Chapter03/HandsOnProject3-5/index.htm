@@ -77,14 +77,14 @@
             document.getElementById("toolBox").value = "";
             i++;
       }
+   }
 
-      var btn = document.getElementById("button");
+   var btn = document.getElementById("button");
 
-      if (btn.addEventListener) {
-         btn.addEventListener("click", processInput, false);
-      } else if (btn.attachEvent) {
-         btn.attachEvent("onclick", processInput);
-      }
+   if (btn.addEventListener) {
+      btn.addEventListener("click", processInput, false);
+   } else if (btn.attachEvent) {
+      btn.attachEvent("onclick", processInput);
    }
    </script>
 </body>
