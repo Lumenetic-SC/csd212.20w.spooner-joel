@@ -71,10 +71,10 @@
         </tr>
         <tr>
             <td colspan="3">
-                <button class="clear" id="clearButton">Clear</button>
+                <button class="clear" id="clearButton" onclick="clearAll()">Clear</button>
             </td>
             <td>
-                <button class="op div" onclick="alert('÷');">÷</button>
+                <button class="op div" onclick="getOperation('÷');">÷</button>
             </td>
         </tr>
         <tr>
@@ -88,7 +88,7 @@
                 <button class="num" onclick="setDisplay(9)">9</button>
             </td>
             <td>
-                <button class="op mul" onclick="alert('X');">X</button>
+                <button class="op mul" onclick="getOperation('X');">X</button>
             </td>
         </tr>
         <tr>
@@ -102,7 +102,7 @@
                 <button class="num" onclick="setDisplay(6)">6</button>
             </td>
             <td>
-                <button class="op sub" onclick="alert('-');">-</button>
+                <button class="op sub" onclick="getOperation('-');">-</button>
             </td>
         </tr>
         <tr>
@@ -116,7 +116,7 @@
                 <button class="num" onclick="setDisplay(3)">3</button>
             </td>
             <td>
-                <button class="op add" onclick="alert('+');">+</button>
+                <button class="op add" onclick="getOperation('+');">+</button>
             </td>
         </tr>
         <tr>
@@ -127,37 +127,110 @@
                 <button class="point" onclick="setDisplay('.')">.</button>
             </td>
             <td>
-                <button class="eq" onclick="alert('=');">=</button>
+                <button class="eq" onclick="getOperation('=');">=</button>
             </td>
         </tr>
     </table>
     <script>
         var hasDecimal = false;
+        var operandCount = 0;
+        let operands = [];
+        let operations = [];
+        let lastOp = "num";
         function setDisplay(numValue) {
-                 
-                if (numValue == '.'){
-                    if (document.getElementById("display").innerText == '0') {
-                        document.getElementById("display").innerText += numValue;
-                        hasDecimal = true;
-                    } else if (hasDecimal == false) {
+            if (lastOp != "num"){
+                if (lastOp == "="){
+                    clearAll();
+                }
+                else{
+                    clear();
+                }
+            }
+            if (numValue == '.'){
+                if (document.getElementById("display").innerText == '0') {
+                    document.getElementById("display").innerText += numValue;
+                    hasDecimal = true;
+                } else if (hasDecimal == false) {
+                    if (lastOp =="="){
+                        document.getElementById("display").innerText = '0.';
+                    }
+                    else {
                         document.getElementById("display").innerText += '.';
                         hasDecimal = true;
                     }
-                } else {
-                    if (numValue == 0 && document.getElementById("display").innerText != '0') {
-                        document.getElementById("display").innerText += numValue;
-                    } else if (document.getElementById("display").innerText == '0') {
-                        document.getElementById("display").innerText = numValue;
-                    } else {
-                        document.getElementById("display").innerText += numValue;
-                    }
                 }
+            } else {
+                if (numValue == 0 && document.getElementById("display").innerText != '0') {
+                    document.getElementById("display").innerText += numValue;
+                } else if (document.getElementById("display").innerText == '0') {
+                    document.getElementById("display").innerText = numValue;
+                } else {
+                    document.getElementById("display").innerText += numValue;
+                }
+            }
+            lastOp = "num";
         }
         function clear() {
             document.getElementById("display").innerText = 0;
             hasDecimal = false;
         }
-        document.getElementById("clearButton").addEventListener("click", clear)
+
+        function clearAll(){
+            clear();
+            operands = [];
+            operandCount = 0;
+            operations = [];
+            operationsCount = 0;
+            lastOp = "num";
+        }
+
+        function getOperation(operation){
+            if (lastOp == "num"){
+                operands[operands.length] = document.getElementById("display").innerText;
+            }
+            if (operation != "="){
+                if (lastOp != "num" && lastOp != "="){
+                    operations[operations.length - 1] = operation;
+                }
+                else {
+                    operations[operations.length] = operation;
+                }
+            }
+            else if (operation == "="){
+                if (lastOp != "num"){
+                    operations.splice(operations.length - 1, 1);
+                }
+                while(operations.length > 0){
+                    if (operations.includes("X")){
+                        var x = operations.indexOf("X");
+                        operands[x] = operands[x]*operands[x+1];
+                        operands.splice(x+1, 1);
+                        operations.splice(x, 1);
+                    }
+                    else if (operations.includes("÷")){
+                        var x = operations.indexOf("÷");
+                        operands[x] = operands[x]/operands[x+1];
+                        operands.splice(x+1, 1);
+                        operations.splice(x, 1);
+                    }
+                    else if (operations.includes("+")){
+                        var x = operations.indexOf("+");
+                        operands[x] = parseFloat(operands[x])+parseFloat(operands[x+1]);
+                        operands.splice(x+1, 1);
+                        operations.splice(x, 1);
+                    }
+                    else if (operations.includes("-")){
+                        var x = operations.indexOf("-");
+                        operands[x] = operands[x]-operands[x+1];
+                        operands.splice(x+1, 1);
+                        operations.splice(x, 1);
+                    }
+                    document.getElementById("display").innerText = operands;                  
+                } 
+     
+            }
+            lastOp = operation;
+        }   
     </script>
 </body>
 </html>
