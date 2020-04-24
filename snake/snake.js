@@ -515,8 +515,8 @@ class SettingsPanel {
         // TODO: update the #block-size-preview element to be the block size picked by the user
         // console.log(this.blockSize)
         var blockPrev = document.getElementById("block-size-preview")
-        blockPrev.style.width = px(this.blockSize)
-        blockPrev.style.height = px(this.blockSize)
+        blockPrev.style.width = this.settingsPanel.blockSize
+        blockPrev.style.height = this.settingsPanel.blockSize
     }
 
     stripInvalidChars() {
@@ -528,6 +528,7 @@ class SettingsPanel {
                 || currentName[i] == "<" || currentName[i] == " " || currentName[i].toUpperCase() == "T"
                 || currentName[i].toUpperCase() == "K" || currentName[i].toUpperCase() == "H") {
                 // newName = newName.concat(currentName[i])
+                // This bit should really be getting done in formatName, but what you have does work
                 if (currentName[i-1] == " " || i == 0){
                     newName = newName.concat(currentName[i].toUpperCase())
                 }
