@@ -231,15 +231,14 @@ class Food extends PlaceableObject {
 
 class Snake {
     constructor(color, position, direction){
-        this._direction = direction
         this.color = color
         this.score = 0
         this.speed = INITIAL_SNAKE_SPEED
-        this.head = new SnakeSegment (color, position, _direction, true, true)
+        this.head = new SnakeSegment (color, position, direction, true, true)
         this.segments = [this.head]
         
     }
-    set direction(dir) {this._direction = dir}
+    set direction(dir) { this.head.direction = dir }
     
 
     //*
@@ -256,42 +255,26 @@ class Snake {
     }
 
     kill(){
-        for(i in this.segments){
-            this.kill
+        for(let i in this.segments){
+            this.kill()
         }
     }
 
 
     nextHeadPosition(){ 
-        switch(this.head.direction) {
-            case 'U':
-                return new Point(this.gridPosition.x, this.gridPosition.y-1)
-            case 'D':
-                return new Point(this.gridPosition.x, this.gridPosition.y+1)
-            case 'L':
-                return new Point(this.gridPosition.x-1, this.gridPosition.y)
-            case 'R':
-                return new Point(this.gridPosition.x+1, this.gridPosition.y)
-            default:
-                return this.gridPosition
-        }
+        return this.head.nextPosition()
     }
 
-    isHeadOn(PlaceableObject){
-        if (this.head.gridPosition === PlaceableObject.gridPosition){
-            return false
-        }
-        else{
-            return false
-        }
+    isHeadOn(placeableObject){
+        return this.head.isAtSamePositionAs(placeableObject)
     }
 
     slither(){
         let nextDir = this.head.direction
         let dirForNextSegment
         for (let i in this.segments){
-            this.segments[i].gridPosition = this.segments[i].nextPosition
-            dirForNextSegment = this.segments[i].currentPosition
+            this.segments[i].gridPosition = this.segments[i].nextPosition()
+            dirForNextSegment = this.segments[i].direction
             this.segments[i].direction = nextDir
             nextDir = dirForNextSegment
         }
@@ -299,20 +282,18 @@ class Snake {
 
     grow(){
             this.segments[this.segments.length - 1].untail()
-            newSegment = new SnakeSegment(this.color, (this.segments[this.segments.length - 1].gridPosition), null, false, true)
+            let newSegment = new SnakeSegment(this.color, (this.segments[this.segments.length - 1].gridPosition), null, false, true)
             this.segments.push(newSegment)
             return newSegment
     }
 
     get snakeLength(){
-        return this.snake.segments.length
+        return this.segments.length
     }
 
     laysOnPoint(p){
-        for (let i in this.snake.segments){
-            if (this.snake.segments[i].gridPosition === p){
-                return true
-            }
+        for (let i in this.segments){
+            if ( this.segments[i].isAtPoint(p) ) { return true }
         }
         return false
     }
@@ -322,11 +303,11 @@ class Snake {
     }
 
     speedUp(){
-        this.snake.speed *= 1.05
+        this.speed *= 1.05
     }
 
     incrementScore(){
-        this.snake.score += 10
+        this.score += 10
     }
 
 }
@@ -336,7 +317,7 @@ class HssishSnake extends Snake{
         return "Hss'ish"
     }
     incrementScore(){
-        this.snake.score += 12
+        this.score += 12
     }
 }
 
@@ -345,7 +326,7 @@ class TssishSnake extends Snake{
         return "Tss'ish"
     }
     speedUp(){
-        this.snake.speed *= 1.01
+        this.speed *= 1.01
     }
 }
 
@@ -355,7 +336,7 @@ class KssishSnake extends Snake{
     }
     grow(){
         if (Math.floor(Math.random() * 2) == 1){
-            this.snake.grow()
+            return super.grow()
         }
         else{
             return null
@@ -405,20 +386,20 @@ class SnakeSegment extends PlaceableObject {
     /**
      * Returns the next position for this snake segment, given its current direction
      */
-    // nextPosition() {
-    //     switch( this.direction ) {
-    //         case 'U':
-    //             return new Point(this.gridPosition.x, this.gridPosition.y-1)
-    //         case 'D':
-    //             return new Point(this.gridPosition.x, this.gridPosition.y+1)
-    //         case 'L':
-    //             return new Point(this.gridPosition.x-1, this.gridPosition.y)
-    //         case 'R':
-    //             return new Point(this.gridPosition.x+1, this.gridPosition.y)
-    //         default:
-    //             return this.gridPosition
-    //     }
-    // }
+    nextPosition() {
+        switch( this.direction ) {
+            case 'U':
+                return new Point(this.gridPosition.x, this.gridPosition.y-1)
+            case 'D':
+                return new Point(this.gridPosition.x, this.gridPosition.y+1)
+            case 'L':
+                return new Point(this.gridPosition.x-1, this.gridPosition.y)
+            case 'R':
+                return new Point(this.gridPosition.x+1, this.gridPosition.y)
+            default:
+                return this.gridPosition
+        }
+    }
 
 }
 
@@ -503,8 +484,8 @@ class Game {
     updateGameInfo() {
         document.getElementById('score').innerText = this.snake.score;
         document.getElementById('speed').innerText = Math.round(this.snake.speed*100)/100
-        document.getElementById('size').innerText = this.snake.snakeLength()
-        document.getElementById('caste').innerText = this.snake.caste()
+        document.getElementById('size').innerText = this.snake.snakeLength
+        document.getElementById('caste').innerText = this.snake.caste
     }
 
     // This is the handler that we passed in to the SettingsPanel.  It gets called when the Start button
@@ -526,13 +507,13 @@ class Game {
 
         // TODO: Pick a random initial direction
         const dirs = ['R','L','U','D']
-        this.snake.direction(dirs[Math.floor(Math.random() * dirs.length)])
+        let d = dirs[Math.floor(Math.random() * dirs.length)]
         
 
         const color = DEFAULT_SNAKE_COLOR
 
         // TODO: Make your own 'Snake' class that will allow the snake to grow
-        this.snake = new Snake(color, position, this.direction )
+        this.snake = new Snake(color, position, d )
 
         this.board.add(this.snake)
 
@@ -586,7 +567,7 @@ class Game {
         
         // Game is over if either the next head position is outside the board...
         // console.log(this.snake.head.gridPosition)
-        return ! this.board.isPointInside(nextHeadPosition) || this.snake.laysOnPoint(this.snake.nextHeadPosition)
+        return ! this.board.isPointInside(nextHeadPosition) || this.snake.laysOnPoint(nextHeadPosition)
         // TODO: check whether the snake collides with itself
     }
 
@@ -613,7 +594,7 @@ class Game {
 
                 let newSegment = this.snake.grow()
                 if (newSegment != null){
-                    this.Board.add(newSegment)
+                    this.board.add(newSegment)
                 }
 
                 // The current food has been eaten! Remove it and make a new one at a random location
